@@ -80,25 +80,8 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
   const isInverted = index % 2 !== 0;
   const fadeRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const video = videoRef.current;
-
-    // Remove all controls immediately
-    if (video) {
-      video.removeAttribute('controls');
-      video.controls = false;
-      video.setAttribute('playsinline', '');
-      video.setAttribute('webkit-playsinline', '');
-      video.setAttribute('x-webkit-airplay', 'deny');
-      video.setAttribute('preload', 'auto');
-
-      // Force autoplay on load
-      video.muted = true;
-      video.defaultMuted = true;
-    }
-
     // Observer for fade-in animation (triggers at 10% visibility)
     const fadeObserver = new IntersectionObserver(
       (entries) => {
@@ -113,51 +96,12 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       { threshold: 0.1 }
     );
 
-    // Observer for video play/pause (triggers at 50% visibility)
-    const videoObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-            // Play video when 50% visible
-            if (video) {
-              const playWhenReady = () => {
-                if (video.readyState >= 2) {
-                  video.play().catch(() => {
-                    setTimeout(() => {
-                      video.play().catch(() => {});
-                    }, 50);
-                  });
-                } else {
-                  video.addEventListener('loadeddata', () => {
-                    video.play().catch(() => {});
-                  }, { once: true });
-                }
-              };
-
-              playWhenReady();
-            }
-          } else {
-            // Pause video when less than 50% visible or out of view
-            if (video && !video.paused) {
-              video.pause();
-            }
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
     if (fadeRef.current) {
       fadeObserver.observe(fadeRef.current);
     }
 
-    if (containerRef.current) {
-      videoObserver.observe(containerRef.current);
-    }
-
     return () => {
       fadeObserver.disconnect();
-      videoObserver.disconnect();
     };
   }, []);
 
@@ -170,28 +114,19 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
     >
       {/* --- LARGE VISUAL --- */}
       <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col">
-        <div
-          ref={containerRef}
-          className="relative w-full overflow-hidden rounded-[1px]"
-        >
-          {/* Video - Multiple sources for Safari compatibility */}
+        <div className="relative w-full overflow-hidden rounded-[1px]">
+          {/* Video - autoplay on all browsers including Safari iOS */}
           <video
             ref={videoRef}
             autoPlay
             loop
             muted
             playsInline
-            preload="metadata"
-            disablePictureInPicture
-            disableRemotePlayback
-            controlsList="nodownload nofullscreen noremoteplayback"
+            preload="auto"
             className="w-full h-auto"
-            aria-label={`Video presentation of ${project.title}`}
-            style={{ backgroundColor: '#F8F9FA', objectFit: 'cover' }}
+            style={{ backgroundColor: '#F8F9FA' }}
           >
-            {/* MP4 video source */}
             <source src={project.videoUrl} type="video/mp4" />
-            <p>Your browser doesn't support HTML5 video.</p>
           </video>
         </div>
       </div>
