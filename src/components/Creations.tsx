@@ -79,26 +79,8 @@ const Creations: React.FC = () => {
 const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, index }) => {
   const isInverted = index % 2 !== 0;
   const fadeRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const video = videoRef.current;
-
-    // Remove all controls immediately
-    if (video) {
-      video.removeAttribute('controls');
-      video.controls = false;
-      video.setAttribute('playsinline', '');
-      video.setAttribute('webkit-playsinline', '');
-      video.setAttribute('x-webkit-airplay', 'deny');
-      video.setAttribute('preload', 'auto');
-
-      // Force autoplay on load
-      video.muted = true;
-      video.defaultMuted = true;
-    }
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -106,34 +88,6 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             // Emerge: blur 10px -> 0, translate-y-12 -> 0, opacity 0 -> 1
             entry.target.classList.add('opacity-100', 'translate-y-0', 'blur-0');
             entry.target.classList.remove('opacity-0', 'translate-y-12', 'blur-sm');
-
-            // Aggressive autoplay for Safari iOS
-            if (video) {
-              // Ensure video is ready
-              const playWhenReady = () => {
-                if (video.readyState >= 2) {
-                  // HAVE_CURRENT_DATA or better
-                  video.play().catch(() => {
-                    // If fails, try again after brief delay
-                    setTimeout(() => {
-                      video.play().catch(() => {});
-                    }, 50);
-                  });
-                } else {
-                  // Wait for video to be ready
-                  video.addEventListener('loadeddata', () => {
-                    video.play().catch(() => {});
-                  }, { once: true });
-                }
-              };
-
-              playWhenReady();
-            }
-          } else {
-            // Pause video when out of view
-            if (video) {
-              video.pause();
-            }
           }
         });
       },
@@ -158,31 +112,15 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
     >
       {/* --- LARGE VISUAL --- */}
       <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col">
-        <div
-          ref={containerRef}
-          className="group relative w-full overflow-hidden bg-white/40 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.03)] backdrop-blur-sm border border-white/40 rounded-[1px]"
-        >
-          {/* Video - Multiple sources for Safari compatibility */}
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            disablePictureInPicture
-            disableRemotePlayback
-            controlsList="nodownload nofullscreen noremoteplayback"
+        <div className="group relative w-full overflow-hidden bg-white/40 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.03)] backdrop-blur-sm border border-white/40 rounded-[1px]">
+          {/* Animated WebP - Auto-plays on all devices including Safari iOS */}
+          <img
+            src={project.videoUrl.replace('.webm', '.webp')}
+            alt={`${project.title} project showcase`}
+            loading="lazy"
             className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100"
-            aria-label={`Video presentation of ${project.title}`}
             style={{ backgroundColor: '#F8F9FA' }}
-          >
-            {/* Safari iOS prefers MP4 */}
-            <source src={project.videoUrl.replace('.webm', '.mp4')} type="video/mp4" />
-            {/* WebM for modern browsers */}
-            <source src={project.videoUrl} type="video/webm" />
-            <p>Your browser doesn't support HTML5 video.</p>
-          </video>
+          />
         </div>
       </div>
 
