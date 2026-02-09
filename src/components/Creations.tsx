@@ -90,11 +90,25 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             entry.target.classList.add('opacity-100', 'translate-y-0', 'blur-0');
             entry.target.classList.remove('opacity-0', 'translate-y-12', 'blur-sm');
 
-            // Play video when in view
+            // Force play video when in view (Safari iOS compatible)
             if (videoRef.current) {
-              videoRef.current.play().catch(() => {
-                // Autoplay might be blocked, that's ok
-              });
+              // Reset and play from start
+              videoRef.current.currentTime = 0;
+              const playPromise = videoRef.current.play();
+
+              if (playPromise !== undefined) {
+                playPromise.catch((error) => {
+                  // Auto-play was prevented, try again after user interaction
+                  console.log('Autoplay prevented:', error);
+
+                  // For Safari iOS, try playing on next tick
+                  setTimeout(() => {
+                    if (videoRef.current) {
+                      videoRef.current.play().catch(() => {});
+                    }
+                  }, 100);
+                });
+              }
             }
           } else {
             // Pause video when out of view
@@ -104,7 +118,7 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
           }
         });
       },
-      { threshold: 0.3, rootMargin: '0px' }
+      { threshold: 0.2, rootMargin: '50px' }
     );
 
     if (fadeRef.current) {
@@ -132,9 +146,14 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             playsInline
             autoPlay
             preload="auto"
-            className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100"
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
+            className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100 [&::-webkit-media-controls]:hidden [&::-webkit-media-controls-start-playback-button]:hidden"
             aria-label={`Video presentation of ${project.title}`}
-            style={{ backgroundColor: '#F8F9FA' }}
+            style={{
+              backgroundColor: '#F8F9FA',
+              pointerEvents: 'none' // Empêche le clic sur la vidéo
+            }}
           >
             {/* Safari iOS prefers MP4 */}
             <source src={project.videoUrl.replace('.webm', '.mp4')} type="video/mp4" />

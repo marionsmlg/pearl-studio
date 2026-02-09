@@ -110,6 +110,23 @@ const ogImage = new URL(image, siteUrl);
     background: transparent;
   }
 
+  /* Hide video controls completely */
+  video::-webkit-media-controls {
+    display: none !important;
+  }
+
+  video::-webkit-media-controls-enclosure {
+    display: none !important;
+  }
+
+  video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+  }
+
+  video::-webkit-media-controls-panel {
+    display: none !important;
+  }
+
   /* Base Nacre Texture */
   #nacre-system {
     position: fixed;
