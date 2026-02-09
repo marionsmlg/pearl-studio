@@ -1,0 +1,18 @@
+# Documentation files (not needed in production)
+doc/
+*.md
+!README.md
+
+# Development files
+.claude/
+.vscode/
+.git/
+.gitignore
+
+# Source files (already built)
+src/
+
+# Config files (not needed in dist)
+*.config.mjs
+*.config.js
+tsconfig.json

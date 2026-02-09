@@ -44,12 +44,14 @@ vercel --prod
 Create a `.env` file for email functionality:
 
 ```env
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
-EMAIL_TO=contact@pearl-agency.com
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@example.com
+SMTP_PASS=your-app-password-here
+CONTACT_EMAIL=contact@pearl-agency.com
 ```
+
+**Note**: Replace with your actual SMTP credentials in Netlify environment variables.
 
 ## Important URLs
 
