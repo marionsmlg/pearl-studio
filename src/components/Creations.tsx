@@ -124,18 +124,25 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       {/* --- LARGE VISUAL --- */}
       <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col">
         <div className="group relative w-full overflow-hidden bg-white/40 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.03)] backdrop-blur-sm border border-white/40 rounded-[1px]">
-          {/* Video */}
+          {/* Video - Multiple sources for Safari compatibility */}
           <video
             ref={videoRef}
-            src={project.videoUrl}
             loop
             muted
             playsInline
-            loading="lazy"
-            preload="metadata"
+            autoPlay
+            preload="auto"
             className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100"
             aria-label={`Video presentation of ${project.title}`}
-          />
+            style={{ backgroundColor: '#F8F9FA' }}
+            poster={`/images/${project.id}-poster.webp`}
+          >
+            {/* Safari iOS prefers MP4 */}
+            <source src={project.videoUrl.replace('.webm', '.mp4')} type="video/mp4" />
+            {/* WebM for modern browsers */}
+            <source src={project.videoUrl} type="video/webm" />
+            <p>Your browser doesn't support HTML5 video.</p>
+          </video>
         </div>
       </div>
 
