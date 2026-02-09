@@ -7,7 +7,7 @@ const PROJECTS = [
     title: 'ZERO/GRAVITY',
     category: 'Alcohol-Free Craft. Full Impact.',
     description: 'ZERO/GRAVITY is a bold 0.0% craft beer concept built around intensity without intoxication. Instead of presenting sobriety as restriction, the brand reframes it as amplification — more clarity, more control, more presence. Each brew becomes its own immersive universe. Mango Supernova explodes in saturated warmth. Deep Forest Haze sinks into herbal greens and misty depth. Volcano Kiss radiates controlled heat. System Glitch embraces chaos. Every flavor carries its own emotional climate.',
-    videoUrl: '/videos/0g.webm',
+    videoUrl: '/videos/0g.mp4',
     videoLabel: 'CRAFT BEER'
   },
   {
@@ -15,7 +15,7 @@ const PROJECTS = [
     title: 'ALS',
     category: 'Critical Systems Online Presence.',
     description: 'For ALS (Airport & Logistics Services), a leader in maintenance and operation of automated airport, logistics, and industrial systems, we delivered a full strategic website that elevates credibility and commercial clarity. The platform presents ALS as a trusted partner in environments where uptime isn\'t optional where every system, baggage flow, and operational asset must perform without fail. The design is structured, professional, and confidence-instilling.',
-    videoUrl: '/videos/ALS.webm',
+    videoUrl: '/videos/ALS.mp4',
     videoLabel: 'AIRPORT SYSTEMS'
   },
   {
@@ -23,7 +23,7 @@ const PROJECTS = [
     title: 'BLACK SIGNAL',
     category: 'Precision Is Law.',
     description: 'BLACK SIGNAL is a tactical shooter concept built around pressure, clarity, and competitive integrity. In a market saturated with visual noise, this project re-centers the experience on discipline and psychological intensity. The interface feels like an operational terminal; deep blacks, subtle grid textures, minimal cyan and red accents. Typography is assertive and functional. Motion is controlled. No decorative excess. No distraction.',
-    videoUrl: '/videos/Black Signal.webm',
+    videoUrl: '/videos/Black Signal.mp4',
     videoLabel: 'TACTICAL SHOOTER'
   },
   {
@@ -31,7 +31,7 @@ const PROJECTS = [
     title: 'VECTRA LABS',
     category: 'Virtual Reality Engineering.',
     description: 'Vectra Labs is a VR & AR development studio concept focused on simulation, spatial computing, and applied research. The positioning shifts from passive viewing to inhabitable systems, engineered digital environments, not visual experiences. The design is grid-driven and minimal. Neutral tones are paired with sharp green system accents and precise typography. Every section feels modular, structured, and technically deliberate.',
-    videoUrl: '/videos/Vectra Labs.webm',
+    videoUrl: '/videos/Vectra Labs.mp4',
     videoLabel: 'VR/AR STUDIO'
   },
   {
@@ -39,7 +39,7 @@ const PROJECTS = [
     title: 'PRAESIO',
     category: 'Strategic Launch Platform.',
     description: 'Praesio is a workplace experience consultancy entering a new phase of growth. As part of an incremental delivery strategy, we designed and deployed a focused single-page website to support immediate prospection efforts. The objective was clarity and momentum not excess. The page articulates positioning, value proposition, and service scope in a structured, high-trust layout built for conversion.',
-    videoUrl: '/videos/Praesio.webm',
+    videoUrl: '/videos/Praesio.mp4',
     videoLabel: 'CONSULTANCY'
   }
 ];
@@ -149,7 +149,10 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
 
     if (fadeRef.current) {
       fadeObserver.observe(fadeRef.current);
-      videoObserver.observe(fadeRef.current);
+    }
+
+    if (containerRef.current) {
+      videoObserver.observe(containerRef.current);
     }
 
     return () => {
@@ -186,10 +189,8 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             aria-label={`Video presentation of ${project.title}`}
             style={{ backgroundColor: '#F8F9FA', objectFit: 'cover' }}
           >
-            {/* Safari iOS prefers MP4 */}
-            <source src={project.videoUrl.replace('.webm', '.mp4')} type="video/mp4" />
-            {/* WebM for modern browsers */}
-            <source src={project.videoUrl} type="video/webm" />
+            {/* MP4 video source */}
+            <source src={project.videoUrl} type="video/mp4" />
             <p>Your browser doesn't support HTML5 video.</p>
           </video>
         </div>
