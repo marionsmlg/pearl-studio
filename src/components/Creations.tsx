@@ -96,17 +96,25 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       { threshold: 0.1 }
     );
 
-    // Observer for video pause (triggers when less than 50% visible)
+    // Observer for video play/pause (triggers at 50% visibility)
     const videoObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const video = entry.target as HTMLVideoElement;
-          if (!entry.isIntersecting || entry.intersectionRatio < 0.5) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            // Video is 50% or more visible - ensure it's playing
+            // Use a small delay to ensure video is loaded
+            setTimeout(() => {
+              if (video.paused) {
+                video.play().catch(() => {
+                  // Safari iOS may block, but autoPlay will handle it
+                });
+              }
+            }, 100);
+          } else {
             // Video is less than 50% visible - pause
             video.pause();
           }
-          // Note: autoPlay attribute handles the initial play on Safari iOS
-          // We only control pause here to avoid autoplay policy issues
         });
       },
       { threshold: [0, 0.5, 1] }
