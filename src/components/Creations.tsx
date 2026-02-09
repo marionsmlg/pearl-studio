@@ -6,7 +6,7 @@ const PROJECTS = [
     id: '0g',
     title: 'ZERO/GRAVITY',
     category: 'Alcohol-Free Craft. Full Impact.',
-    description: 'ZERO/GRAVITY is a bold 0.0% craft beer concept built around intensity without intoxication. Instead of presenting sobriety as restriction, the brand reframes it as amplification — more clarity, more control, more presence. Each brew becomes its own immersive universe. Mango Supernova explodes in saturated warmth. Deep Forest Haze sinks into herbal greens and misty depth. Volcano Kiss radiates controlled heat. System Glitch embraces chaos. Every flavor carries its own emotional climate.',
+    description: 'ZERO/GRAVITY is a bold 0.0% craft beer concept built around intensity without intoxication. Instead of presenting sobriety as restriction, the brand reframes it as amplification, more clarity, more control, more presence. Each brew becomes its own immersive universe. Mango Supernova explodes in saturated warmth. Deep Forest Haze sinks into herbal greens and misty depth. Volcano Kiss radiates controlled heat. System Glitch embraces chaos. Every flavor carries its own emotional climate.',
     videoUrl: '/videos/0g.mp4',
     videoLabel: 'CRAFT BEER'
   },
