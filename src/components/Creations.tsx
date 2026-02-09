@@ -175,7 +175,7 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             controlsList="nodownload nofullscreen noremoteplayback"
             className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100"
             aria-label={`Video presentation of ${project.title}`}
-            style={{ backgroundColor: '#F8F9FA' }}
+            style={{ backgroundColor: '#F8F9FA', objectFit: 'cover' }}
           >
             {/* Safari iOS prefers MP4 */}
             <source src={project.videoUrl.replace('.webm', '.mp4')} type="video/mp4" />
