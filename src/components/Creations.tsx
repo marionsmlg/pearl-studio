@@ -90,25 +90,29 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             entry.target.classList.add('opacity-100', 'translate-y-0', 'blur-0');
             entry.target.classList.remove('opacity-0', 'translate-y-12', 'blur-sm');
 
-            // Auto-play video when it becomes visible
+            // Force video to load and play when visible
             if (videoRef.current) {
+              // Load the video
+              videoRef.current.load();
+
+              // Reset to start
               videoRef.current.currentTime = 0;
 
-              // Try to play immediately
-              const playPromise = videoRef.current.play();
+              // Multiple attempts to ensure playback on Safari iOS
+              const attemptPlay = () => {
+                if (videoRef.current) {
+                  const playPromise = videoRef.current.play();
 
-              if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                  // If autoplay is blocked, retry after a brief delay
-                  setTimeout(() => {
-                    if (videoRef.current) {
-                      videoRef.current.play().catch(() => {
-                        // Silently fail if still blocked
-                      });
-                    }
-                  }, 100);
-                });
-              }
+                  if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                      // Retry up to 3 times with increasing delays
+                      setTimeout(attemptPlay, 100);
+                    });
+                  }
+                }
+              };
+
+              attemptPlay();
             }
           } else {
             // Pause video when out of view
@@ -118,7 +122,7 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
           }
         });
       },
-      { threshold: 0.2, rootMargin: '50px' }
+      { threshold: 0.15, rootMargin: '100px' }
     );
 
     if (fadeRef.current) {
@@ -141,6 +145,7 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
           {/* Video - Multiple sources for Safari compatibility */}
           <video
             ref={videoRef}
+            autoPlay
             loop
             muted
             playsInline
