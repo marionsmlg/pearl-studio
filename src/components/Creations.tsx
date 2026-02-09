@@ -12,7 +12,7 @@ const PROJECTS = [
   },
   {
     id: 'als',
-    title: 'ALS-MAINTENANCE',
+    title: 'ALS',
     category: 'Critical Systems Online Presence.',
     description: 'For ALS (Airport & Logistics Services), a leader in maintenance and operation of automated airport, logistics, and industrial systems, we delivered a full strategic website that elevates credibility and commercial clarity. The platform presents ALS as a trusted partner in environments where uptime isn\'t optional where every system, baggage flow, and operational asset must perform without fail. The design is structured, professional, and confidence-instilling.',
     videoUrl: '/videos/ALS.webm',
@@ -80,8 +80,20 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
   const isInverted = index % 2 !== 0;
   const fadeRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const video = videoRef.current;
+
+    // Remove all controls immediately
+    if (video) {
+      video.removeAttribute('controls');
+      video.controls = false;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.setAttribute('x-webkit-airplay', 'deny');
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -91,17 +103,17 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             entry.target.classList.remove('opacity-0', 'translate-y-12', 'blur-sm');
 
             // Force video to load and play when visible
-            if (videoRef.current) {
+            if (video) {
               // Load the video
-              videoRef.current.load();
+              video.load();
 
               // Reset to start
-              videoRef.current.currentTime = 0;
+              video.currentTime = 0;
 
               // Multiple attempts to ensure playback on Safari iOS
               const attemptPlay = () => {
-                if (videoRef.current) {
-                  const playPromise = videoRef.current.play();
+                if (video) {
+                  const playPromise = video.play();
 
                   if (playPromise !== undefined) {
                     playPromise.catch(() => {
@@ -116,8 +128,8 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             }
           } else {
             // Pause video when out of view
-            if (videoRef.current) {
-              videoRef.current.pause();
+            if (video) {
+              video.pause();
             }
           }
         });
@@ -129,7 +141,27 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       observer.observe(fadeRef.current);
     }
 
-    return () => observer.disconnect();
+    // Handle touch anywhere on container to play video
+    const handleTouch = (e: TouchEvent | MouseEvent) => {
+      if (video && video.paused) {
+        e.preventDefault();
+        video.play().catch(() => {});
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('touchstart', handleTouch, { passive: false });
+      container.addEventListener('click', handleTouch);
+    }
+
+    return () => {
+      observer.disconnect();
+      if (container) {
+        container.removeEventListener('touchstart', handleTouch);
+        container.removeEventListener('click', handleTouch);
+      }
+    };
   }, []);
 
   return (
@@ -141,7 +173,10 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
     >
       {/* --- LARGE VISUAL --- */}
       <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col">
-        <div className="group relative w-full overflow-hidden bg-white/40 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.03)] backdrop-blur-sm border border-white/40 rounded-[1px]">
+        <div
+          ref={containerRef}
+          className="group relative w-full overflow-hidden bg-white/40 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.03)] backdrop-blur-sm border border-white/40 rounded-[1px] cursor-pointer"
+        >
           {/* Video - Multiple sources for Safari compatibility */}
           <video
             ref={videoRef}
@@ -150,9 +185,12 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             muted
             playsInline
             preload="auto"
-            className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100"
+            disablePictureInPicture
+            disableRemotePlayback
+            controlsList="nodownload nofullscreen noremoteplayback"
+            className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100 [&::-webkit-media-controls]:hidden [&::-webkit-media-controls-enclosure]:hidden [&::-webkit-media-controls-panel]:hidden"
             aria-label={`Video presentation of ${project.title}`}
-            style={{ backgroundColor: '#F8F9FA' }}
+            style={{ backgroundColor: '#F8F9FA', pointerEvents: 'none' }}
           >
             {/* Safari iOS prefers MP4 */}
             <source src={project.videoUrl.replace('.webm', '.mp4')} type="video/mp4" />
