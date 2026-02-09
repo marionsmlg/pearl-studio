@@ -92,6 +92,11 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
       video.setAttribute('x-webkit-airplay', 'deny');
+      video.setAttribute('preload', 'auto');
+
+      // Force autoplay on load
+      video.muted = true;
+      video.defaultMuted = true;
     }
 
     const observer = new IntersectionObserver(
@@ -102,29 +107,27 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             entry.target.classList.add('opacity-100', 'translate-y-0', 'blur-0');
             entry.target.classList.remove('opacity-0', 'translate-y-12', 'blur-sm');
 
-            // Force video to load and play when visible
+            // Aggressive autoplay for Safari iOS
             if (video) {
-              // Load the video
-              video.load();
-
-              // Reset to start
-              video.currentTime = 0;
-
-              // Multiple attempts to ensure playback on Safari iOS
-              const attemptPlay = () => {
-                if (video) {
-                  const playPromise = video.play();
-
-                  if (playPromise !== undefined) {
-                    playPromise.catch(() => {
-                      // Retry up to 3 times with increasing delays
-                      setTimeout(attemptPlay, 100);
-                    });
-                  }
+              // Ensure video is ready
+              const playWhenReady = () => {
+                if (video.readyState >= 2) {
+                  // HAVE_CURRENT_DATA or better
+                  video.play().catch(() => {
+                    // If fails, try again after brief delay
+                    setTimeout(() => {
+                      video.play().catch(() => {});
+                    }, 50);
+                  });
+                } else {
+                  // Wait for video to be ready
+                  video.addEventListener('loadeddata', () => {
+                    video.play().catch(() => {});
+                  }, { once: true });
                 }
               };
 
-              attemptPlay();
+              playWhenReady();
             }
           } else {
             // Pause video when out of view
@@ -134,33 +137,15 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
           }
         });
       },
-      { threshold: 0.15, rootMargin: '100px' }
+      { threshold: 0.1, rootMargin: '200px' }
     );
 
     if (fadeRef.current) {
       observer.observe(fadeRef.current);
     }
 
-    // Handle touch anywhere on container to play video
-    const handleTouch = (e: TouchEvent | MouseEvent) => {
-      if (video && video.paused) {
-        e.preventDefault();
-        video.play().catch(() => {});
-      }
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('touchstart', handleTouch, { passive: false });
-      container.addEventListener('click', handleTouch);
-    }
-
     return () => {
       observer.disconnect();
-      if (container) {
-        container.removeEventListener('touchstart', handleTouch);
-        container.removeEventListener('click', handleTouch);
-      }
     };
   }, []);
 
@@ -175,7 +160,7 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col">
         <div
           ref={containerRef}
-          className="group relative w-full overflow-hidden bg-white/40 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.03)] backdrop-blur-sm border border-white/40 rounded-[1px] cursor-pointer"
+          className="group relative w-full overflow-hidden bg-white/40 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.03)] backdrop-blur-sm border border-white/40 rounded-[1px]"
         >
           {/* Video - Multiple sources for Safari compatibility */}
           <video
@@ -184,13 +169,13 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             loop
             muted
             playsInline
-            preload="auto"
+            preload="metadata"
             disablePictureInPicture
             disableRemotePlayback
             controlsList="nodownload nofullscreen noremoteplayback"
-            className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100 [&::-webkit-media-controls]:hidden [&::-webkit-media-controls-enclosure]:hidden [&::-webkit-media-controls-panel]:hidden"
+            className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100"
             aria-label={`Video presentation of ${project.title}`}
-            style={{ backgroundColor: '#F8F9FA', pointerEvents: 'none' }}
+            style={{ backgroundColor: '#F8F9FA' }}
           >
             {/* Safari iOS prefers MP4 */}
             <source src={project.videoUrl.replace('.webm', '.mp4')} type="video/mp4" />
