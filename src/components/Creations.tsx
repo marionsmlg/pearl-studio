@@ -96,12 +96,36 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       { threshold: 0.1 }
     );
 
+    // Observer for video play/pause (triggers at 50% visibility)
+    const videoObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            // Video is 50% or more visible - play
+            video.play().catch(() => {
+              // Ignore autoplay errors on some browsers
+            });
+          } else {
+            // Video is less than 50% visible - pause
+            video.pause();
+          }
+        });
+      },
+      { threshold: [0, 0.5, 1] }
+    );
+
     if (fadeRef.current) {
       fadeObserver.observe(fadeRef.current);
     }
 
+    if (videoRef.current) {
+      videoObserver.observe(videoRef.current);
+    }
+
     return () => {
       fadeObserver.disconnect();
+      videoObserver.disconnect();
     };
   }, []);
 
@@ -115,10 +139,9 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       {/* --- LARGE VISUAL --- */}
       <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col">
         <div className="relative w-full overflow-hidden rounded-[1px]">
-          {/* Video - autoplay on all browsers including Safari iOS */}
+          {/* Video - controlled by IntersectionObserver */}
           <video
             ref={videoRef}
-            autoPlay
             loop
             muted
             playsInline
