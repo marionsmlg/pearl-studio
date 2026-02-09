@@ -99,28 +99,35 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       video.defaultMuted = true;
     }
 
-    const observer = new IntersectionObserver(
+    // Observer for fade-in animation (triggers at 10% visibility)
+    const fadeObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             // Emerge: blur 10px -> 0, translate-y-12 -> 0, opacity 0 -> 1
             entry.target.classList.add('opacity-100', 'translate-y-0', 'blur-0');
             entry.target.classList.remove('opacity-0', 'translate-y-12', 'blur-sm');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-            // Aggressive autoplay for Safari iOS
+    // Observer for video play/pause (triggers at 50% visibility)
+    const videoObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            // Play video when 50% visible
             if (video) {
-              // Ensure video is ready
               const playWhenReady = () => {
                 if (video.readyState >= 2) {
-                  // HAVE_CURRENT_DATA or better
                   video.play().catch(() => {
-                    // If fails, try again after brief delay
                     setTimeout(() => {
                       video.play().catch(() => {});
                     }, 50);
                   });
                 } else {
-                  // Wait for video to be ready
                   video.addEventListener('loadeddata', () => {
                     video.play().catch(() => {});
                   }, { once: true });
@@ -130,22 +137,24 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
               playWhenReady();
             }
           } else {
-            // Pause video when out of view
-            if (video) {
+            // Pause video when less than 50% visible or out of view
+            if (video && !video.paused) {
               video.pause();
             }
           }
         });
       },
-      { threshold: 0.1, rootMargin: '200px' }
+      { threshold: 0.5 }
     );
 
     if (fadeRef.current) {
-      observer.observe(fadeRef.current);
+      fadeObserver.observe(fadeRef.current);
+      videoObserver.observe(fadeRef.current);
     }
 
     return () => {
-      observer.disconnect();
+      fadeObserver.disconnect();
+      videoObserver.disconnect();
     };
   }, []);
 
@@ -160,7 +169,7 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
       <div className="w-full md:w-[55%] lg:w-[60%] flex flex-col">
         <div
           ref={containerRef}
-          className="group relative w-full overflow-hidden bg-white/40 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.03)] backdrop-blur-sm border border-white/40 rounded-[1px]"
+          className="relative w-full overflow-hidden rounded-[1px]"
         >
           {/* Video - Multiple sources for Safari compatibility */}
           <video
@@ -173,7 +182,7 @@ const ProjectSection: React.FC<{ project: any; index: number }> = ({ project, in
             disablePictureInPicture
             disableRemotePlayback
             controlsList="nodownload nofullscreen noremoteplayback"
-            className="w-full h-auto opacity-90 transition-transform duration-[2s] ease-physics group-hover:scale-105 group-hover:opacity-100"
+            className="w-full h-auto"
             aria-label={`Video presentation of ${project.title}`}
             style={{ backgroundColor: '#F8F9FA', objectFit: 'cover' }}
           >
