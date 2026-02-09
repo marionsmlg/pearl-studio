@@ -1,0 +1,78 @@
+---
+interface Props {
+  type?: 'home' | 'about' | 'portfolio';
+}
+
+const { type = 'home' } = Astro.props;
+
+const baseData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "PEARL Digital Studio",
+  "description": "PEARL is a digital studio focused on clarity, intention, and longevity. We build websites that are carefully engineered, yet effortless on the surface.",
+  "url": "https://pearl-agency.com",
+  "logo": "https://pearl-agency.com/favicon.svg",
+  "foundingDate": "2024",
+  "founders": [
+    {
+      "@type": "Person",
+      "name": "Alexis",
+      "jobTitle": "Co-Founder"
+    },
+    {
+      "@type": "Person",
+      "name": "Marion",
+      "jobTitle": "Co-Founder & Designer"
+    }
+  ],
+  "sameAs": [],
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "FR"
+  }
+};
+
+const portfolioData = type === 'portfolio' ? {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "PEARL Studio Portfolio",
+  "description": "Collection of digital projects by PEARL Studio",
+  "numberOfItems": 5,
+  "itemListElement": [
+    {
+      "@type": "CreativeWork",
+      "position": 1,
+      "name": "ZERO/GRAVITY",
+      "description": "Alcohol-Free Craft Beer Brand Concept"
+    },
+    {
+      "@type": "CreativeWork",
+      "position": 2,
+      "name": "ALS-MAINTENANCE",
+      "description": "Airport & Logistics Systems Website"
+    },
+    {
+      "@type": "CreativeWork",
+      "position": 3,
+      "name": "BLACK SIGNAL",
+      "description": "Tactical Shooter Game Concept"
+    },
+    {
+      "@type": "CreativeWork",
+      "position": 4,
+      "name": "VECTRA LABS",
+      "description": "VR & AR Development Studio"
+    },
+    {
+      "@type": "CreativeWork",
+      "position": 5,
+      "name": "PRAESIO",
+      "description": "Workplace Experience Consultancy Website"
+    }
+  ]
+} : null;
+
+const structuredData = type === 'portfolio' ? [baseData, portfolioData] : baseData;
+---
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
