@@ -41,13 +41,13 @@ const Header: React.FC<HeaderProps> = ({ currentPath }) => {
         <nav className="flex items-center gap-8 md:gap-12">
 
           <a
-            href="/creations"
+            href="/projects"
             className={`text-[11px] font-medium tracking-[0.2em] uppercase transition-all duration-300 relative group ${
-              currentPath === '/creations' ? 'text-graphite' : 'text-mist hover:text-graphite'
+              currentPath === '/projects' ? 'text-graphite' : 'text-mist hover:text-graphite'
             }`}
           >
             Work
-            <span className={`absolute -bottom-2 left-0 w-full h-[1px] bg-graphite/30 transition-transform duration-300 origin-left ${currentPath === '/creations' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
+            <span className={`absolute -bottom-2 left-0 w-full h-[1px] bg-graphite/30 transition-transform duration-300 origin-left ${currentPath === '/projects' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
           </a>
 
           <a
@@ -56,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ currentPath }) => {
               currentPath === '/about' ? 'text-graphite' : 'text-mist hover:text-graphite'
             }`}
           >
-            Studio
+            About
             <span className={`absolute -bottom-2 left-0 w-full h-[1px] bg-graphite/30 transition-transform duration-300 origin-left ${currentPath === '/about' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
           </a>
 
