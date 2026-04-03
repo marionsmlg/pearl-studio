@@ -11,9 +11,9 @@ export interface ClientData {
   testimonial: string;
 }
 
-export type FormStep = 'intro' | 'goal' | 'scope' | 'existing' | 'contact' | 'recap' | 'success';
+export type ProjectFormStep = 'intro' | 'goal' | 'scope' | 'existing' | 'contact' | 'recap' | 'success';
 
-export interface FormData {
+export interface ProjectFormData {
   industry: string;
   goal: string;
   scope: string;

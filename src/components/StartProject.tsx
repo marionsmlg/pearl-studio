@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FormStep, FormData } from '../types';
+import type { ProjectFormStep, ProjectFormData } from '../types';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 const PLACEHOLDERS = {
@@ -13,8 +13,8 @@ const PLACEHOLDERS = {
 };
 
 const StartProject: React.FC = () => {
-  const [step, setStep] = useState<FormStep>('intro');
-  const [formData, setFormData] = useState<FormData>({
+  const [step, setStep] = useState<ProjectFormStep>('intro');
+  const [formData, setProjectFormData] = useState<ProjectFormData>({
     industry: '',
     goal: '',
     scope: '',
@@ -50,7 +50,7 @@ const StartProject: React.FC = () => {
     return () => clearInterval(interval);
   }, [step]);
 
-  const sendEmail = async (data: FormData) => {
+  const sendEmail = async (data: ProjectFormData) => {
     try {
       const response = await fetch('/.netlify/functions/sendEmail', {
         method: 'POST',
@@ -82,7 +82,7 @@ const StartProject: React.FC = () => {
         }
     }
 
-    let targetStep: FormStep = step;
+    let targetStep: ProjectFormStep = step;
 
     if (direction === 'next') {
         if (step === 'intro') targetStep = 'goal';
@@ -121,7 +121,7 @@ const StartProject: React.FC = () => {
          if (step === 'existing') currentData.existing = inputValue;
          if (step === 'contact') currentData.email = inputValue;
       }
-      setFormData(currentData);
+      setProjectFormData(currentData);
 
       let nextInputVal = '';
       if (targetStep === 'intro') nextInputVal = currentData.industry;
@@ -146,8 +146,8 @@ const StartProject: React.FC = () => {
     }
   };
 
-  const handleRecapChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleRecapChange = (field: keyof ProjectFormData, value: string) => {
+    setProjectFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const currentPlaceholders = PLACEHOLDERS[step] || [];
