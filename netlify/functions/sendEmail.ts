@@ -9,8 +9,7 @@ import { Resend } from 'resend';
 //   1. Décommenter le bloc ci-dessous
 //   2. Supprimer ou commenter le bloc "IMPLÉMENTATION RESEND"
 //   3. Réinstaller nodemailer : npm install nodemailer @types/nodemailer
-//   4. Reconfigurer les variables d'env SMTP dans Netlify :
-//        SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, CONTACT_EMAIL
+
 // ============================================================
 
 // import * as nodemailer from 'nodemailer';
@@ -141,12 +140,7 @@ import { Resend } from 'resend';
 // export { handler };
 
 // ============================================================
-// IMPLÉMENTATION RESEND
-// Variable d'env requise dans Netlify :
-//   RESEND_API_KEY  — la clé API Resend
-//   CONTACT_EMAIL   — l'adresse qui reçoit les demandes
-// L'adresse expéditeur doit être un domaine vérifié dans Resend.
-// En attendant la vérification du domaine, utilise onboarding@resend.dev
+
 // ============================================================
 
 const handler: Handler = async (event) => {
