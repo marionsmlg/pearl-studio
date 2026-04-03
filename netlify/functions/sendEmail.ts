@@ -302,7 +302,7 @@ const handler: Handler = async (event) => {
     `;
 
     await resend.emails.send({
-      from: 'Pearl Studio <contact@pearl-agency.com>',
+      from: `Pearl Studio <${process.env.SMTP_USER}>`,
       to: process.env.CONTACT_EMAIL!,
       reply_to: email,
       subject: `New Project Request from ${email}`,
