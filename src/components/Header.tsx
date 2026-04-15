@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ currentPath }) => {
 
         {/* Logo - Left Aligned */}
         <a href="/" className="group relative z-50">
-          <h1 className="text-xl font-bold tracking-[0.15em] text-graphite group-hover:opacity-70 transition-opacity duration-300 drop-shadow-sm">
+          <h1 className="text-2xl font-semibold tracking-[0.15em] text-graphite group-hover:opacity-70 transition-opacity duration-300 drop-shadow-sm" style={{ fontFamily: "'LaLuxes', serif" }}>
             PEARL
           </h1>
         </a>
